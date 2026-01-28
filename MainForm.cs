@@ -13,6 +13,8 @@ namespace MouseClickTimer
         private bool isRunning = false;
         private int currentLoop = 0;
         private int totalLoops = 1;
+        private int fixedClickX = 0;
+        private int fixedClickY = 0;
 
         public MainForm()
         {
@@ -48,10 +50,16 @@ namespace MouseClickTimer
                     AddLog($"  总点击次数: {totalLoops * 3} 次");
                     AddLog("");
 
+                    // 恢复系统休眠设置
+                    SetThreadExecutionState(ES_CONTINUOUS);
+                    AddLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 已恢复系统休眠设置");
+
                     btnStart.Enabled = true;
                     btnStop.Enabled = false;
                     nudMinutes.Enabled = true;
                     nudLoopCount.Enabled = true;
+                    nudClickX.Enabled = true;
+                    nudClickY.Enabled = true;
                     lblCountdown.Text = "剩余时间: 00:00";
                     lblCurrentLoop.Text = "当前循环: 0 / 0";
                     currentLoop = 0;
@@ -119,15 +127,25 @@ namespace MouseClickTimer
                     return;
                 }
 
+                // 获取固定坐标
+                fixedClickX = (int)nudClickX.Value;
+                fixedClickY = (int)nudClickY.Value;
+
                 currentLoop = 0;
                 remainingSeconds = minutes * 60;
                 isRunning = true;
                 countdownTimer.Start();
 
+                // 防止系统休眠和屏幕关闭
+                SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED | ES_AWAYMODE_REQUIRED);
+                AddLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 已启用防止系统休眠功能");
+
                 btnStart.Enabled = false;
                 btnStop.Enabled = true;
                 nudMinutes.Enabled = false;
                 nudLoopCount.Enabled = false;
+                nudClickX.Enabled = false;
+                nudClickY.Enabled = false;
                 UpdateCountdownDisplay();
                 UpdateLoopDisplay();
 
@@ -136,6 +154,7 @@ namespace MouseClickTimer
                 AddLog($"  倒计时: {minutes} 分钟");
                 AddLog($"  循环次数: {totalLoops} 次");
                 AddLog($"  每次循环点击: 3 次，间隔 2 秒");
+                AddLog($"  固定点击坐标: ({fixedClickX}, {fixedClickY})");
                 AddLog("");
             }
             catch (Exception ex)
@@ -149,10 +168,16 @@ namespace MouseClickTimer
             countdownTimer.Stop();
             isRunning = false;
 
+            // 恢复系统休眠设置（允许系统正常休眠）
+            SetThreadExecutionState(ES_CONTINUOUS);
+            AddLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 已恢复系统休眠设置");
+
             btnStart.Enabled = true;
             btnStop.Enabled = false;
             nudMinutes.Enabled = true;
             nudLoopCount.Enabled = true;
+            nudClickX.Enabled = true;
+            nudClickY.Enabled = true;
             lblCountdown.Text = "剩余时间: 00:00";
             lblCurrentLoop.Text = "当前循环: 0 / 0";
 
@@ -177,33 +202,60 @@ namespace MouseClickTimer
         [DllImport("user32.dll")]
         private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
 
+        [DllImport("user32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out Point lpPoint);
+
         private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const uint MOUSEEVENTF_LEFTUP = 0x0004;
+        private const uint MOUSEEVENTF_ABSOLUTE = 0x8000;
+
+        // Windows API 函数声明，用于防止系统休眠
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern uint SetThreadExecutionState(uint esFlags);
+
+        private const uint ES_CONTINUOUS = 0x80000000;
+        private const uint ES_SYSTEM_REQUIRED = 0x00000001;
+        private const uint ES_DISPLAY_REQUIRED = 0x00000002;
+        private const uint ES_AWAYMODE_REQUIRED = 0x00000040;
 
         private void PerformMouseClick()
         {
-            // 获取当前鼠标位置
-            Point currentPos = Cursor.Position;
+            // 使用固定坐标
+            int clickX = fixedClickX;
+            int clickY = fixedClickY;
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
             // 记录循环开始
-            AddLog($"[{timestamp}] 开始执行第 {currentLoop + 1} 个循环的鼠标点击");
+            AddLog($"[{timestamp}] 开始执行第 {currentLoop + 1} 个循环的鼠标点击 (固定坐标: {clickX}, {clickY})");
 
             // 执行三次点击，每次间隔2000毫秒（2秒）
             for (int i = 0; i < 3; i++)
             {
+                // 先移动鼠标到固定坐标位置
+                SetCursorPos(clickX, clickY);
+                
+                // 短暂延迟，确保鼠标移动到位
+                System.Threading.Thread.Sleep(50);
+
+                // 验证鼠标位置（可选，用于日志）
+                Point actualPos;
+                GetCursorPos(out actualPos);
+                
                 // 模拟鼠标左键按下
-                mouse_event(MOUSEEVENTF_LEFTDOWN, (uint)currentPos.X, (uint)currentPos.Y, 0, 0);
+                mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
 
                 // 短暂延迟
                 System.Threading.Thread.Sleep(10);
 
                 // 模拟鼠标左键释放
-                mouse_event(MOUSEEVENTF_LEFTUP, (uint)currentPos.X, (uint)currentPos.Y, 0, 0);
+                mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 
                 // 记录每次点击
                 string clickTime = DateTime.Now.ToString("HH:mm:ss.fff");
-                AddLog($"  [{clickTime}] 第 {i + 1} 次点击完成 (位置: {currentPos.X}, {currentPos.Y})");
+                AddLog($"  [{clickTime}] 第 {i + 1} 次点击完成 (目标坐标: {clickX}, {clickY}, 实际位置: {actualPos.X}, {actualPos.Y})");
 
                 // 如果不是最后一次点击，等待2000毫秒
                 if (i < 2)
@@ -288,11 +340,22 @@ namespace MouseClickTimer
             }
         }
 
+        private void btnGetCurrentPosition_Click(object sender, EventArgs e)
+        {
+            // 获取当前鼠标位置并设置到坐标输入框
+            Point currentPos = Cursor.Position;
+            nudClickX.Value = currentPos.X;
+            nudClickY.Value = currentPos.Y;
+            AddLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 已获取当前鼠标位置: ({currentPos.X}, {currentPos.Y})");
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (isRunning)
             {
                 countdownTimer?.Stop();
+                // 恢复系统休眠设置
+                SetThreadExecutionState(ES_CONTINUOUS);
             }
             base.OnFormClosing(e);
         }

@@ -16,10 +16,15 @@ namespace MouseClickTimer
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Label lblCountdown;
         private System.Windows.Forms.Label lblCurrentLoop;
+        private System.Windows.Forms.Label lblClickX;
+        private System.Windows.Forms.NumericUpDown nudClickX;
+        private System.Windows.Forms.Label lblClickY;
+        private System.Windows.Forms.NumericUpDown nudClickY;
         private System.Windows.Forms.RichTextBox txtLog;
         private System.Windows.Forms.Button btnClearLog;
         private System.Windows.Forms.Label lblLog;
         private System.Windows.Forms.Button btnOpenLogFolder;
+        private System.Windows.Forms.Button btnGetCurrentPosition;
 
         /// <summary>
         /// 清理所有正在使用的资源。
@@ -51,12 +56,21 @@ namespace MouseClickTimer
             this.btnStop = new System.Windows.Forms.Button();
             this.lblCountdown = new System.Windows.Forms.Label();
             this.lblCurrentLoop = new System.Windows.Forms.Label();
+            this.lblClickX = new System.Windows.Forms.Label();
+            this.nudClickX = new System.Windows.Forms.NumericUpDown();
+            this.lblClickY = new System.Windows.Forms.Label();
+            this.nudClickY = new System.Windows.Forms.NumericUpDown();
             this.lblLog = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.RichTextBox();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnOpenLogFolder = new System.Windows.Forms.Button();
+            this.btnGetCurrentPosition = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinutes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudLoopCount)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickY)).BeginInit();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -138,10 +152,10 @@ namespace MouseClickTimer
             // btnStart
             // 
             this.btnStart.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnStart.Location = new System.Drawing.Point(170, 150);
+            this.btnStart.Location = new System.Drawing.Point(170, 190);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(100, 35);
-            this.btnStart.TabIndex = 5;
+            this.btnStart.TabIndex = 13;
             this.btnStart.Text = "开始";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -150,10 +164,10 @@ namespace MouseClickTimer
             // 
             this.btnStop.Enabled = false;
             this.btnStop.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnStop.Location = new System.Drawing.Point(290, 150);
+            this.btnStop.Location = new System.Drawing.Point(290, 190);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(100, 35);
-            this.btnStop.TabIndex = 6;
+            this.btnStop.TabIndex = 14;
             this.btnStop.Text = "停止";
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
@@ -163,7 +177,7 @@ namespace MouseClickTimer
             this.lblCountdown.AutoSize = true;
             this.lblCountdown.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblCountdown.ForeColor = System.Drawing.Color.Blue;
-            this.lblCountdown.Location = new System.Drawing.Point(210, 210);
+            this.lblCountdown.Location = new System.Drawing.Point(210, 250);
             this.lblCountdown.Name = "lblCountdown";
             this.lblCountdown.Size = new System.Drawing.Size(120, 21);
             this.lblCountdown.TabIndex = 7;
@@ -174,39 +188,116 @@ namespace MouseClickTimer
             this.lblCurrentLoop.AutoSize = true;
             this.lblCurrentLoop.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblCurrentLoop.ForeColor = System.Drawing.Color.Green;
-            this.lblCurrentLoop.Location = new System.Drawing.Point(210, 240);
+            this.lblCurrentLoop.Location = new System.Drawing.Point(210, 280);
             this.lblCurrentLoop.Name = "lblCurrentLoop";
             this.lblCurrentLoop.Size = new System.Drawing.Size(120, 20);
             this.lblCurrentLoop.TabIndex = 8;
             this.lblCurrentLoop.Text = "当前循环: 0 / 0";
             // 
+            // lblClickX
+            // 
+            this.lblClickX.AutoSize = true;
+            this.lblClickX.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblClickX.Location = new System.Drawing.Point(140, 150);
+            this.lblClickX.Name = "lblClickX";
+            this.lblClickX.Size = new System.Drawing.Size(79, 20);
+            this.lblClickX.TabIndex = 9;
+            this.lblClickX.Text = "点击X坐标:";
+            // 
+            // nudClickX
+            // 
+            this.nudClickX.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.nudClickX.Location = new System.Drawing.Point(225, 148);
+            this.nudClickX.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.nudClickX.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudClickX.Name = "nudClickX";
+            this.nudClickX.Size = new System.Drawing.Size(100, 25);
+            this.nudClickX.TabIndex = 10;
+            this.nudClickX.Value = new decimal(new int[] {
+            467,
+            0,
+            0,
+            0});
+            // 
+            // lblClickY
+            // 
+            this.lblClickY.AutoSize = true;
+            this.lblClickY.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblClickY.Location = new System.Drawing.Point(340, 150);
+            this.lblClickY.Name = "lblClickY";
+            this.lblClickY.Size = new System.Drawing.Size(79, 20);
+            this.lblClickY.TabIndex = 11;
+            this.lblClickY.Text = "点击Y坐标:";
+            // 
+            // nudClickY
+            // 
+            this.nudClickY.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.nudClickY.Location = new System.Drawing.Point(425, 148);
+            this.nudClickY.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.nudClickY.Minimum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.nudClickY.Name = "nudClickY";
+            this.nudClickY.Size = new System.Drawing.Size(100, 25);
+            this.nudClickY.TabIndex = 12;
+            this.nudClickY.Value = new decimal(new int[] {
+            702,
+            0,
+            0,
+            0});
+            // 
+            // btnGetCurrentPosition
+            // 
+            this.btnGetCurrentPosition.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnGetCurrentPosition.Location = new System.Drawing.Point(20, 148);
+            this.btnGetCurrentPosition.Name = "btnGetCurrentPosition";
+            this.btnGetCurrentPosition.Size = new System.Drawing.Size(110, 25);
+            this.btnGetCurrentPosition.TabIndex = 19;
+            this.btnGetCurrentPosition.Text = "获取鼠标位置";
+            this.btnGetCurrentPosition.UseVisualStyleBackColor = true;
+            this.btnGetCurrentPosition.Click += new System.EventHandler(this.btnGetCurrentPosition_Click);
+            // 
             // lblLog
             // 
             this.lblLog.AutoSize = true;
             this.lblLog.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblLog.Location = new System.Drawing.Point(20, 280);
+            this.lblLog.Location = new System.Drawing.Point(20, 320);
             this.lblLog.Name = "lblLog";
             this.lblLog.Size = new System.Drawing.Size(79, 20);
-            this.lblLog.TabIndex = 9;
+            this.lblLog.TabIndex = 15;
             this.lblLog.Text = "执行日志:";
             // 
             // txtLog
             // 
             this.txtLog.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtLog.Location = new System.Drawing.Point(20, 305);
+            this.txtLog.Location = new System.Drawing.Point(20, 345);
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.Size = new System.Drawing.Size(500, 200);
-            this.txtLog.TabIndex = 10;
+            this.txtLog.TabIndex = 16;
             this.txtLog.Text = "";
             // 
             // btnClearLog
             // 
             this.btnClearLog.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnClearLog.Location = new System.Drawing.Point(360, 280);
+            this.btnClearLog.Location = new System.Drawing.Point(360, 320);
             this.btnClearLog.Name = "btnClearLog";
             this.btnClearLog.Size = new System.Drawing.Size(75, 25);
-            this.btnClearLog.TabIndex = 11;
+            this.btnClearLog.TabIndex = 17;
             this.btnClearLog.Text = "清空日志";
             this.btnClearLog.UseVisualStyleBackColor = true;
             this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
@@ -214,10 +305,10 @@ namespace MouseClickTimer
             // btnOpenLogFolder
             // 
             this.btnOpenLogFolder.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnOpenLogFolder.Location = new System.Drawing.Point(445, 280);
+            this.btnOpenLogFolder.Location = new System.Drawing.Point(445, 320);
             this.btnOpenLogFolder.Name = "btnOpenLogFolder";
             this.btnOpenLogFolder.Size = new System.Drawing.Size(75, 25);
-            this.btnOpenLogFolder.TabIndex = 12;
+            this.btnOpenLogFolder.TabIndex = 18;
             this.btnOpenLogFolder.Text = "打开日志";
             this.btnOpenLogFolder.UseVisualStyleBackColor = true;
             this.btnOpenLogFolder.Click += new System.EventHandler(this.btnOpenLogFolder_Click);
@@ -226,11 +317,16 @@ namespace MouseClickTimer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(540, 520);
+            this.ClientSize = new System.Drawing.Size(540, 560);
             this.Controls.Add(this.btnOpenLogFolder);
             this.Controls.Add(this.btnClearLog);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.lblLog);
+            this.Controls.Add(this.btnGetCurrentPosition);
+            this.Controls.Add(this.nudClickY);
+            this.Controls.Add(this.lblClickY);
+            this.Controls.Add(this.nudClickX);
+            this.Controls.Add(this.lblClickX);
             this.Controls.Add(this.lblCurrentLoop);
             this.Controls.Add(this.lblCountdown);
             this.Controls.Add(this.btnStop);
@@ -247,6 +343,8 @@ namespace MouseClickTimer
             this.Text = "定时鼠标点击工具";
             ((System.ComponentModel.ISupportInitialize)(this.nudMinutes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudLoopCount)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudClickY)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
